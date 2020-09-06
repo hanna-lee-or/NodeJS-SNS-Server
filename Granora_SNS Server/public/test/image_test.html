@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
+    <link rel="stylesheet" href="css/myButton.css" />
+    <title>다중 이미지 처리 테스트 페이지</title>
+
+    <!-- 제이쿼리 사용 -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+    <script>
+
+        var number = 1;
+
+        // 문서 로딩 완료 시
+        $(function () {
+            // 파일선택 값이 바뀌면
+            $("#photoInput1").change(function () {
+                    readURL(this, 1);
+            });
+        });
+
+        // 파일선택한 정보를 이용해 이미지 프리뷰
+        function readURL(input, num) {
+
+            var BlockName = "#photoInput" + num;
+            var BlockName2 = "#photoOutput" + num;
+
+            // 파일명 띄우기
+            if (window.FileReader) {
+                // modern browser
+                var filename = $(BlockName)[0].files[0].name;
+            } else {
+                // old IE
+                var filename = $(BlockName)
+                    .val()
+                    .split("/")
+                    .pop()
+                    .split("\\")
+                    .pop(); // 파일명만 추출
+            }
+            // 추출한 파일명 삽입
+            $(BlockName)
+                .siblings(".upload-name")
+                .val(filename);
+
+            // 이미지 미리보기
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $(BlockName2).attr("src", e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addPhotoBloc() {
+
+            if (number >= 10)
+                return;
+
+            number++;
+            var wrapper = document.getElementById("myHTMLWrapper");
+            var myHTML = "";
+
+            myHTML += '<tr><td colspan="2">';
+            myHTML += '<input class="upload-name" value="파일선택" disabled="disabled" />';
+            myHTML += '<label for="photoInput' + number + '">업로드</label>';
+            myHTML += '<input type="file" name="photo" id="photoInput' + number + '" accept=".jpg, .jpeg, .png, .gif" required />';
+            myHTML += '<br /><br /><img src="" id="photoOutput' + number + '" width="200px" />';
+            myHTML += '</td></tr>';
+            
+            wrapper.innerHTML += myHTML;
+
+            $("#photoInput" + number).change(function () {
+                    readURL(this, number);
+            });
+
+        }
+    </script>
+
+    <style>
+        .filebox input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        .filebox label {
+            display: inline-block;
+            padding: 0.5em 0.75em;
+            color: rgb(0, 0, 0);
+            font-family: Arial;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: normal;
+            vertical-align: middle;
+            background-color: #ffe9a1;
+            cursor: pointer;
+            border: 0px solid #ffffff;
+            border-radius: 0.25em;
+        }
+
+        /* named upload */
+        .filebox .upload-name {
+            display: inline-block;
+            padding: 0.5em 0.75em;
+            /* label의 패딩값과 일치 */
+            font-family: Arial;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: normal;
+            vertical-align: middle;
+            background-color: #f7f7f7;
+            border: 1px solid #eeeeee;
+            border-radius: 0.25em;
+            -webkit-appearance: none;
+            /* 네이티브 외형 감추기 */
+            -moz-appearance: none;
+            appearance: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>
+        <font color="#FF9966"># 다중 이미지 처리 테스트</font>
+    </h3>
+    <br />
+    <form method="post" action="/updateImg_test" enctype="multipart/form-data" class="filebox">
+        <table>
+            <div id="myHTMLWrapper">
+            <tr>
+                <td colspan="2">
+                    <input class="upload-name" value="파일선택" disabled="disabled" />
+                    <label for="photoInput1">업로드</label>
+                    <input type="file" name="photo" id="photoInput1" accept=".jpg, .jpeg, .png, .gif" required />
+                    <br /><br /><img src="" id="photoOutput1" width="200px" />
+                </td>
+            </tr>
+            </div>
+            <!-- <tr>
+                <td><label>아이디(이름)</label></td>
+                <td><input type="text" name="name" maxlength="20" required /></td>
+            </tr>
+            <tr>
+                <td><label>닉네임</label></td>
+                <td><input type="text" name="nickname" maxlength="20" required /></td>
+            </tr>
+            <tr>
+                <td><label>소개글</label></td>
+                <td><textarea name="info" style="width:12.5em;height:10em;" maxlength="100"></textarea></td>
+            </tr> -->
+        </table>
+
+        <br />
+        <input type="button" value="추가" class="myButton" onclick = "addPhotoBloc()"/>
+        <input type="submit" value="저장" class="myButton" />
+        <input type="button" value="닫기" class="myButton" onclick="location.href='../index.html'" />
+    </form>
+</body>
+
+</html>

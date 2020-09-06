@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <link rel="stylesheet" href="css/myButton.css">
+    <title>게시글 작성 페이지</title>
+
+    <!-- 제이쿼리 사용 -->
+    <!-- <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script> -->
+
+    <!-- moment 사용 -->
+    <!-- <script src="moment.min.js"></script>
+        <script>
+        
+            // 문서 로딩 완료 시
+            $(function() {
+                var curDate = moment().format('YYYY-MM-DD HH:mm');
+                $('#createDate').attr('value', curDate);
+                
+                // 파일선택 값이 바뀌면 
+                $("#photoInput").change(function() {
+                    readURL(this);
+                });
+            });
+            
+            // 파일선택한 정보를 이용해 이미지 프리뷰
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#photoOutput').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+             
+        </script> -->
+
+    <style>
+        table {
+            border: 3px solid #848484;
+            padding: 5px;
+            width: 232px;
+        }
+
+        tbody tr:last-child {
+            text-align: end;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h3>
+        <font color="#FF9966"># 게시글 작성</font>
+    </h3>
+    <br>
+    <form method="post" action="/createPost">
+        <table>
+            <tr>
+                <td><label>제목</label></td>
+                <td><input type="text" name="title" maxlength="50" required /></td>
+            </tr>
+            <tr>
+                <td><label>내용</label></td>
+                <td><textarea name="text" style="width:12.5em;height:10em;" maxlength="2000"></textarea></td>
+            </tr>
+            <!-- <tr>
+                    <td><label>사진</label></td>
+                    <td><input type="file" name="photo" id="photoInput" /><br><img src="" id="photoOutput" width="200px" /></td>
+                </tr> -->
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="저장" class="myButton" />
+                    <input type="button" value="닫기" class="myButton" onclick="location.href='index.html'" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+
+</html>

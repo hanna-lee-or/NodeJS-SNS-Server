@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <link rel="stylesheet" href="css/myButton.css">
+    <title>게시글 수정 페이지</title>
+
+    <!-- 제이쿼리 사용 -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+
+            var urlParams = new URLSearchParams(window.location.search);
+            $('#postId').val(urlParams.get('postId'));
+
+            var paramPostId = $("#postId").val();
+            var urlStr = "/getPost/" + paramPostId;
+
+            //Ajax GET Method TEST
+            $.ajax({
+                url: urlStr,
+                dataType: "json",
+                type: "GET",
+                success: function (result) {
+                    $("#title").attr("value", result.post.content.title);
+                    $("#text").html(result.post.content.text);
+                }
+            });
+        });
+    </script>
+
+    <style>
+        table {
+            border: 3px solid #848484;
+            padding: 5px;
+            width: 255px;
+        }
+
+        tbody tr:last-child {
+            text-align: end;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h3>
+        <font color="#FF9966"># 게시글 수정</font>
+    </h3>
+    <br>
+    <form method="post" action="/updatePost">
+        <table>
+            <tr>
+                <td><label>게시글 ID</label></td>
+                <td><input type="text" name="postId" id="postId" /></td>
+            </tr>
+            <tr>
+                <td><label>제목</label></td>
+                <td><input type="text" name="title" id="title" maxlength="50" required /></td>
+            </tr>
+            <tr>
+                <td><label>내용</label></td>
+                <td><textarea name="text" id="text" style="width:12.5em;height:10em;" maxlength="2000"></textarea></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="저장" class="myButton" />
+                    <input type="button" value="닫기" class="myButton" onclick="location.href='index.html'" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+
+</html>

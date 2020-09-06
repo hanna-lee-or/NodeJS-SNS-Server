@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <link rel="stylesheet" href="css/myButton.css">
+    <title>게시글 삭제 페이지</title>
+    <!-- 제이쿼리 사용 -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+
+            var urlParams = new URLSearchParams(window.location.search);
+            $('#postId').val(urlParams.get('postId'));
+
+            $('#getMethod').click(function () {
+
+                var paramPostId = $('#postId').val();
+                var urlStr = '/removePost/' + paramPostId;
+
+                //Ajax GET Method TEST
+                $.ajax({
+                    url: urlStr,
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (result) {
+                        if (result) {
+                            if (result.isDeletePost)
+                                $('#isSuccess').attr('value', "true");
+                            else {
+                                $('#isSuccess').attr('value', "false");
+                                $('#err').attr('value', result.errMsg);
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+    <style>
+        table {
+            border: 3px solid #848484;
+            padding: 5px;
+            width: 315px;
+        }
+
+        tbody tr:last-child {
+            text-align: end;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h3>
+        <font color="#FF9966"># 게시글 삭제</font>
+    </h3>
+    <br>
+    <table>
+        <tr>
+            <td><label>게시글 ID</label></td>
+            <td><input type="text" name="postId" id="postId" required /></td>
+        </tr>
+        <tr>
+            <td><label>처리 성공 여부</label></td>
+            <td><input type="text" name="isSuccess" id="isSuccess" readonly /></td>
+        </tr>
+        <tr>
+            <td><label>에러 메시지</label></td>
+            <td><input type="text" name="err" id="err" readonly /></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="button" value="삭제" id="getMethod" class="myButton" />
+                <input type="button" value="닫기" class="myButton" onclick="location.href='index.html'" />
+            </td>
+        </tr>
+    </table>
+    </form>
+</body>
+
+</html>

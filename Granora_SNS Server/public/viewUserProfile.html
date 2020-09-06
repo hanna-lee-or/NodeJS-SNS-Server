@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
+    <link rel="stylesheet" href="css/myButton.css">
+    <title>사용자 목록</title>
+    <!-- 제이쿼리 사용 -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script>
+
+        var userId;
+
+        $(document).ready(function () {
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams) {
+                userId = urlParams.get("userId");
+            }
+            getList(userId);
+        });
+
+        function getList(id) {
+
+            //Ajax GET Method TEST
+            $.ajax({
+                url: "/getOtherProfile/" + id,
+                dataType: "json",
+                type: "GET",
+                success: function (result) {
+                    if (result) {
+                        var wrapper = document.getElementById("myHTMLWrapper");
+                        var myHTML = '';
+                        if (!result.isGetUser) {
+                            myHTML += '<table><tr><td><strong><font color="#FF9966">';
+                            myHTML += 'Err : ' + result.errorMsg;
+                            myHTML += '</font></strong></td></tr></table><br/>';
+                        } else {
+
+                            document.getElementById("listNum").innerHTML =
+                                '<font color="#FF9966"># ' + result.nickname + " 님의 프로필";
+
+                            // 작성자
+                            myHTML += '<table><tr><td rowspan="2"><img src="';
+                            if (!result.isBasicImg)
+                                myHTML += result.cloudUrl;
+                            myHTML +=
+                                '" width="50" height="50" style="margin-right: 1em;" onerror="';
+                            myHTML += "this.src='/public/images/BasicProfile.png'";
+                            myHTML += '" alt="" /></td><td><strong>';
+                            myHTML += result.nickname;
+                            myHTML += '</strong></td>';
+                            // 게시글 수
+                            myHTML += '<td colspan="2"><strong><font color="#848484">- 작성 게시글 </font><font color="#000000">';
+                            myHTML += result.board_count;
+                            myHTML += '</font><font color="#848484">개 -</font></strong></td></tr>';
+                            // 아이디, following 수, follower 수
+                            myHTML += '<tr><td><font color="#848484">@ ';
+                            myHTML += result.userName;
+                            myHTML += '</font><td><strong>';
+                            myHTML += result.following_count;
+                            myHTML += '<font color="#848484"> 팔로잉</font></strong></td><td><strong>';
+                            myHTML += result.follower_count;
+                            myHTML += '<font color="#848484"> 팔로워</font></strong></td></tr>';
+                            // 게시글 내용
+                            myHTML +=
+                                '<tr><td width="400" colspan="4"><pre style="word-wrap: break-word;white-space:';
+                            myHTML += ' pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-break:break-all;">';
+                            myHTML += result.userInfo;
+                            myHTML += '</pre></td></tr>';
+                            // 버튼들
+                            myHTML +=
+                                '<tr><td colspan="4"><input type="button" value="팔로우" class="myButton" onclick="location.href=';
+                            urlStr = "'../flipFollow/" + result._id + "'";
+                            myHTML += urlStr;
+                            myHTML += '" /></td></tr></table><br/>';
+
+                        }
+                        wrapper.innerHTML += myHTML;
+                    }
+                }
+            });
+        }
+    </script>
+
+    <style>
+        table {
+            border: 3px solid #848484;
+            padding: 5px;
+            width: 400px;
+        }
+
+        tbody tr:last-child {
+            text-align: right;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h3 id="listNum">
+        <font color="#FF9966"># 프로필 </font>
+    </h3>
+    <br />
+
+    <div id="myHTMLWrapper">
+
+    </div>
+
+    <br />
+    <input type="button" value="닫기" class="myButton" onclick="location.href='index.html'" />
+</body>
+
+</html>

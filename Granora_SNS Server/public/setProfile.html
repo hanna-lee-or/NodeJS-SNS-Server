@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <link rel="stylesheet" href="css/myButton.css">
+    <title>프로필 수정 페이지</title>
+
+    <style>
+        table {
+            border: 3px solid #848484;
+            padding: 5px;
+            width: 290px;
+        }
+
+        tbody tr:last-child {
+            text-align: end;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h3>
+        <font color="#FF9966"># 나의 프로필</font>
+    </h3>
+    <br>
+    <form method="post" action="/modifyUser">
+        <table>
+            <tr>
+                <td><label>아이디(이름)</label></td>
+                <td><input type="text" name="name" maxlength="20" required /></td>
+            </tr>
+            <tr>
+                <td><label>닉네임</label></td>
+                <td><input type="text" name="nickname" maxlength="20" required /></td>
+            </tr>
+            <tr>
+                <td><label>소개글</label></td>
+                <td><textarea name="info" style="width:12.5em;height:10em;" maxlength="100"></textarea></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label><input type="checkbox" name="isBasicImg" value="true"> 기본 프로필로 설정</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="저장" class="myButton" />
+                    <input type="button" value="닫기" class="myButton" onclick="location.href='index.html'" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+
+</html>

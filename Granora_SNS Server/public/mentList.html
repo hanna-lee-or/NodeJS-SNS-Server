@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
+    <link rel="stylesheet" href="css/myButton.css">
+    <title>댓글 목록</title>
+    <!-- 제이쿼리 사용 -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="./moment.min.js"></script>
+    <script>
+        var postId;
+        var page = 1;
+        var flag = false;
+        var lastDate = moment().format();
+
+        $(document).ready(function () {
+            var urlParams = new URLSearchParams(window.location.search);
+            postId = urlParams.get('postId');
+            getList(page, postId);
+
+            $("#mentAdd").click(function () {
+
+                if (!postId) return;
+
+                var urlStr = "mentNew.html?postId=" + postId;
+
+                location.href = urlStr;
+            });
+        });
+
+        $(window).scroll(function () {
+            //스크롤이 최하단 으로 내려가면 리스트를 조회하고 page를 증가시킨다.
+            console.log($(window).scrollTop() + ", " + $(document).innerHeight() + ", " + $(window).outerHeight());
+            if (Math.round($(window).scrollTop()) >= Math.round($(document).innerHeight() - $(window).outerHeight())) {
+                if (!flag)
+                    getList(page, postId);
+            }
+        });
+
+        function pageAdd() {
+            page++;
+        }
+
+        function flagOn() {
+            flag = true;
+        }
+
+        function setDate(date) {
+            lastDate = date;
+        }
+
+        function getList(page, postId) {
+
+            //Ajax GET Method TEST
+            $.ajax({
+                url: "/getUpMents",
+                dataType: "json",
+                type: "Post",
+                data: {
+                    postId: postId,
+                    page: page,
+                    lastDate: lastDate
+                },
+                success: function (result) {
+                    if (result) {
+                        var wrapper = document.getElementById("myHTMLWrapper");
+                        var myHTML = '';
+                        if (!result.isGetMent) {
+                            myHTML += '<table><tr><td><strong><font color="#FF9966">';
+                            myHTML += 'Err : ' + result.errorMsg;
+                            myHTML += '</font></strong></td></tr></table><br/>';
+                        } else if (page == 1 && result.totalNum == 0) {
+                            myHTML += '<table><tr><td><strong><font color="#FF9966">';
+                            myHTML += '작성한 댓글이 없습니다.</font></strong></td></tr></table><br/>';
+                        } else {
+
+                            // 페이지 표시
+                            if (result.totalNum == 0) {
+                                myHTML += '<table><tr><td><strong><font color="#FF9966">';
+                                myHTML += '마지막 페이지입니다.</font></strong></td></tr></table><br/>';
+                                wrapper.innerHTML += myHTML;
+                                flagOn();
+                                return;
+                            }
+
+                            document.getElementById("listNum").innerHTML =
+                                '<font color="#FF9966"># 댓글 목록 (' + page + "/" + (result.remainPage +
+                                    page - 1) + ")";
+
+                            myHTML += '<table><tr><td><strong><font color="#FF9966">';
+                            myHTML += page + ' page</font></strong></td></tr></table><br/>';
+                            pageAdd();
+
+                            // 댓글 리스트 출력
+                            var urlStr;
+                            var mentsLeng = result.ments.length;
+                            for (var i = 0; i < mentsLeng; i++) {
+                                // 작성자
+                                myHTML += '<table><tr><td rowspan="2"><a href="viewUserProfile.html?userId=';
+                                myHTML += result.ments[i].w_id;
+                                myHTML += '"><img src="';
+                                if (!result.ments[i].w_isBasicImg)
+                                    myHTML += result.ments[i].w_cloudUrl;
+                                myHTML += '" width="50" height="50" style="margin-right: 1em;" onerror="';
+                                myHTML += "this.src='/public/images/BasicProfile.png'";
+                                myHTML += '" alt="" /></td><td>';
+                                myHTML += result.ments[i].w_nickname;
+                                myHTML += '</td>';
+                                // 좋아요 수, 대댓글 수
+                                myHTML += '<td><strong>[ ';
+                                if (result.ments[i].isLike) {
+                                    myHTML += '♥';
+                                }
+                                else {
+                                    myHTML += '♡'
+                                }
+                                myHTML += result.ments[i].like_count;
+                                myHTML += '</strong></td><td><strong>ⓒ';
+                                myHTML += result.ments[i].comment_count;
+                                myHTML += ' ]</strong></td></tr>';
+                                // 아이디, 작성일자
+                                myHTML += '<tr><td><font color="#848484">@';
+                                myHTML += result.ments[i].w_userName;
+                                myHTML += '</font></td><td colspan="2"><font color="#848484">';
+                                if (i == mentsLeng - 1) {
+                                    setDate(result.ments[i].created_at);
+                                }
+                                myHTML += moment(result.ments[i].created_at, "YYYY-MM-DDTHH:mm:ssZ").format(
+                                    "YYYY-MM-DD HH:mm:ss");
+                                myHTML += '</font></td></tr>';
+                                // 댓글 내용
+                                myHTML +=
+                                    '<tr><td width="400" colspan="4"><pre style="word-wrap: break-word;white-space:';
+                                myHTML += ' pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-break:break-all;">';
+                                myHTML += result.ments[i].text;
+                                myHTML += '</pre></td></tr>';
+                                // 버튼들
+                                myHTML +=
+                                    '<tr><td colspan="4"><input type="button" value="좋아요" class="myButton" onclick="location.href=';
+                                urlStr = "'../flipLike/upment/" + result.ments[i]._id + "/" + postId + "'";
+                                myHTML += urlStr;
+                                myHTML +=
+                                    '" /><input type="button" value="대댓글 조회" class="myButton" onclick="location.href=';
+                                urlStr = "'downMentList.html?postId=" + postId + "&parentId=" + result
+                                    .ments[i]._id + "'";
+                                myHTML += urlStr;
+                                myHTML += '" /><input type="button" value="대댓글 작성" class="myButton" onclick="location.href=';
+                                var urlStr = "'downMentNew.html?postId=" + postId + "&parentId=" + result
+                                    .ments[i]._id + "'";
+                                myHTML += urlStr;
+                                myHTML += '" /><input type="button" value="삭제" class="myButton" onclick="location.href=';
+                                urlStr = "'mentRemove.html?postId=" + postId + "&mentId=" + result.ments[i]
+                                    ._id + "'";
+                                myHTML += urlStr;
+                                myHTML += '" /></td></tr></table><br/>';
+                            }
+
+                        }
+                        wrapper.innerHTML += myHTML;
+                    }
+                }
+            });
+        }
+    </script>
+
+    <style>
+        table {
+            border: 3px solid #848484;
+            padding: 5px;
+            width: 400px;
+        }
+
+        tbody tr:last-child {
+            text-align: right;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h3 id="listNum">
+        <font color="#FF9966"># 댓글 목록 (1/1)</font>
+    </h3>
+    <br />
+
+    <div id="myHTMLWrapper">
+
+    </div>
+
+    <br />
+    <input type="button" value="댓글작성" id="mentAdd" class="myButton" />
+    <input type="button" value="게시글목록으로" class="myButton" onclick="location.href='postList.html'" />
+    <input type="button" value="닫기" class="myButton" onclick="location.href='index.html'" />
+</body>
+
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
+    <link rel="stylesheet" href="css/myButton.css" />
+    <title>게시글 조회 페이지</title>
+    <!-- 제이쿼리 사용 -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="./moment.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#getMethod").click(function () {
+                var paramPostId = $("#postId").val();
+                var urlStr = "/getPost/" + paramPostId;
+
+                //Ajax GET Method TEST
+                $.ajax({
+                    url: urlStr,
+                    dataType: "json",
+                    type: "GET",
+                    success: function (result) {
+                        // 삭제/수정 버튼 숨기기 (내 게시글이 아니면)
+                        if (!result.post.isMyPost) {
+                            $("#postRemove").hide();
+                            $("#postSet").hide();
+                        }
+                        // 삭제/수정 버튼 활성화 (내 게시글이면)
+                        else {
+                            $("#postRemove").show();
+                            $("#postSet").show();
+                        }
+
+                        var wrapper = document.getElementById("myHTMLWrapper");
+                        var myHTML = "";
+                        if (!result.isGetPost) {
+                            myHTML += '<table><tr><td><strong><font color="#FF9966">';
+                            myHTML += "Err : " + result.errorMsg;
+                            myHTML += "</font></strong></td></tr></table><br/>";
+                        } else {
+                            // 작성자
+                            myHTML +=
+                                '<table><tr><td rowspan="2"><a href="viewUserProfile.html?userId=';
+                            myHTML += result.post.w_id;
+                            myHTML += '"><img src="';
+                            if (!result.post.w_isBasicImg)
+                                myHTML += result.post.w_cloudUrl;
+                            myHTML +=
+                                '" width="50" height="50" style="margin-right: 1em;" onerror="';
+                            myHTML += "this.src='/public/images/BasicProfile.png'";
+                            myHTML += '" alt="" /></td><td>';
+                            myHTML += result.post.w_nickname;
+                            myHTML += "</td>";
+                            // 제목, 좋아요 수, 댓글 수
+                            myHTML += "<td><strong>";
+                            myHTML += result.post.title;
+                            myHTML += "</strong></td><td><strong>[ ";
+                            if (result.post.isLike) {
+                                myHTML += "♥";
+                            } else {
+                                myHTML += "♡";
+                            }
+                            myHTML += result.post.like_count;
+                            myHTML += "</strong></td><td><strong>ⓒ";
+                            myHTML += result.post.comment_count;
+                            myHTML += " ] ";
+                            if (result.post.isClip) {
+                                myHTML += "★";
+                            } else {
+                                myHTML += "☆";
+                            }
+                            myHTML += "</strong></td></tr>";
+                            // 아이디, 작성일자
+                            myHTML += '<tr><td><font color="#848484">@';
+                            myHTML += result.post.w_userName;
+                            myHTML += '</font></td><td><font color="#848484">';
+                            myHTML += moment(
+                                result.post.created_at,
+                                "YYYY-MM-DDTHH:mm:ssZ"
+                            ).format("YYYY-MM-DD HH:mm:ss");
+                            myHTML += "</font></td></tr>";
+                            //이미지 
+                            for(var i=0;i<result.post.images.length;i++){
+                                myHTML+='<tr><td colspan="5"><img src="';
+                                myHTML += result.post.images[i];
+                            myHTML +=
+                                '" width="250" style="margin-right: 1em;" onerror="';
+                            myHTML += "this.src='/public/images/BasicProfile.png'";
+                            myHTML += '" alt="" /></td></tr>';
+                            }
+                            // 게시글 내용
+                            myHTML +=
+                                '<tr><td width="400" colspan="5"><pre style="word-wrap: break-word;white-space:';
+                            myHTML +=
+                                ' pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-break:break-all;">';
+                            myHTML += result.post.text;
+                            myHTML += "</pre></td></tr>";
+                            // 버튼들
+                            myHTML +=
+                                '<tr><td colspan="5"><input type="button" value="좋아요" class="myButton" onclick="location.href=';
+                            urlStr = "'../flipLike/post/" + result.post._id + "/0'";
+                            myHTML += urlStr;
+                            myHTML +=
+                                '" /><input type="button" value="북마크" class="myButton" onclick="location.href=';
+                            urlStr = "'../flipClip/" + result.post._id + "/" + result.post.w_id + "'";
+                            myHTML += urlStr;
+                            myHTML +=
+                                '" /><input type="button" value="댓글 조회" class="myButton" onclick="location.href=';
+                            urlStr = "'mentList.html?postId=" + result.post._id + "'";
+                            myHTML += urlStr;
+                            myHTML +=
+                                '" /><input type="button" value="댓글 작성" class="myButton" onclick="location.href=';
+                            urlStr = "'mentNew.html?postId=" + result.post._id + "'";
+                            myHTML += urlStr;
+                            myHTML += '" /></td></tr></table><br/>';
+                        }
+                        wrapper.innerHTML = myHTML;
+                    }
+                });
+            });
+
+            $("#postRemove").click(function () {
+                var paramPostId = $("#postId").val();
+
+                if (!paramPostId) return;
+
+                var urlStr = "postRemove.html?postId=" + paramPostId;
+
+                location.href = urlStr;
+            });
+
+            $("#postSet").click(function () {
+                var paramPostId = $("#postId").val();
+
+                if (!paramPostId) return;
+
+                var urlStr = "postSet.html?postId=" + paramPostId;
+
+                location.href = urlStr;
+            });
+
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams) {
+                $("#postId").val(urlParams.get("postId"));
+                document.getElementById("getMethod").click();
+            }
+        });
+    </script>
+
+    <style>
+        .writerBox {
+            border: 3px solid #848484;
+            padding: 5px;
+        }
+
+        table {
+            border: 3px solid #848484;
+            padding: 5px;
+        }
+
+        tbody tr:last-child {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>
+        <font color="#FF9966"># 게시글 조회</font>
+    </h3>
+    <br />
+    <label>게시글 ID</label>
+    <input type="text" name="postId" id="postId" required />
+    <input type="button" value="삭제" id="postRemove" class="myButton" />
+    <input type="button" value="수정" id="postSet" class="myButton" />
+    <br />
+    <br />
+
+    <div id="myHTMLWrapper"></div>
+
+    <input type="button" value="조회" id="getMethod" class="myButton" />
+    <input type="button" value="닫기" onclick="location.href='index.html'" class="myButton" />
+</body>
+
+</html>

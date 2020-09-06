@@ -1,0 +1,38 @@
+{
+  "name": "catcherland",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.606.0",
+    "body-parser": "^1.15.2",
+    "cloudinary": "^1.15.0",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^3.0.0",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.5",
+    "ejs": "^2.5.2",
+    "errorhandler": "^1.4.3",
+    "express": "^4.14.0",
+    "express-error-handler": "^1.1.0",
+    "express-session": "^1.14.2",
+    "googleapis": "^42.0.0",
+    "moment": "^2.24.0",
+    "mongoose": "^5.8.5",
+    "multer": "^1.4.2",
+    "multer-storage-cloudinary": "^2.2.1",
+    "nodemailer": "^6.4.2",
+    "nodemailer-smtp-transport": "^2.7.4",
+    "passport": "^0.3.2",
+    "passport-facebook": "^2.1.1",
+    "passport-google-oauth": "^1.0.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "passport-naver": "^1.0.6",
+    "passport-twitter": "^1.0.4",
+    "serve-favicon": "^2.5.0",
+    "serve-static": "^1.11.2"
+  }
+}

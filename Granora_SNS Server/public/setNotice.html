@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <link rel="stylesheet" href="css/myButton.css">
+    <title>설정 페이지</title>
+</head>
+
+<body>
+    <h3>
+        <font color="#FF9966"># 설정</font>
+    </h3>
+    <br>
+    <form method="post" action="/modifyNotice">
+        <table>
+            <tr>
+                <td>
+                    <label><input type="radio" name="pushNotice" value="1" checked> 푸쉬 알림 허용</label>
+                </td>
+                <td>
+                    <label><input type="radio" name="pushNotice" value="0"> 푸쉬 알림 거부</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label><input type="radio" name="emailNotice" value="1"> 이메일 수신 동의</label>
+                </td>
+                <td>
+                    <label><input type="radio" name="emailNotice" value="0" checked> 이메일 수신 비동의</label>
+                </td>
+            </tr>
+        </table>
+        <br/>
+        <input type="submit" value="저장" class="myButton" />
+        <input type="button" value="닫기" class="myButton" onclick="location.href='index.html'" />
+    </form>
+</body>
+
+</html>

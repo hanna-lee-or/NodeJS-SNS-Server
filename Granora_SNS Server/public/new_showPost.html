@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
+    <link rel="stylesheet" href="css/myButton.css" />
+    <title>전체 게시글 목록</title>
+    <!-- 제이쿼리 사용 -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="./moment.min.js"></script>
+    <script>
+        var page = 1;
+        var flag = false;
+        var lastDate = '0';
+
+        $(document).ready(function () {
+            getList(page);
+        });
+
+        $(window).scroll(function () {
+            //스크롤이 최하단 으로 내려가면 리스트를 조회하고 page를 증가시킨다.
+            //console.log($(window).scrollTop() + ", " + $(document).innerHeight() + ", " + $(window).outerHeight());
+            if (Math.round($(window).scrollTop()) >= Math.round($(document).innerHeight() - $(window).outerHeight())) {
+                if (!flag)
+                    getList(page);
+            }
+        });
+
+        // $("#myHTMLWrapper").scroll(function () {
+        //     console.log($(this)[0].scrollHeight);
+        //     if ($(this)[0].scrollHeight - Math.round($(this).scrollTop()) == $(this).outerHeight()) {
+        //         if (!flag) getList(page);
+        //     }
+        // });
+
+        function pageAdd() {
+            page++;
+        }
+
+        function flagOn() {
+            flag = true;
+        }
+
+        function setDate(date) {
+            lastDate = date;
+        }
+
+        function getList(page) {
+            //Ajax GET Method TEST
+            $.ajax({
+                url: "/showPosts",
+                dataType: "json",
+                type: "Post",
+                data: {
+                    page: page,
+                    lastDate: lastDate
+                },
+                success: function (result) {
+                    if (result) {
+                        var wrapper = document.getElementById("myHTMLWrapper");
+                        var myHTML = "";
+                        if (!result.isGetPost) {
+                            myHTML += '<table><tr><td><strong><font color="#FF9966">';
+                            myHTML += "Err : " + result.errorMsg;
+                            myHTML += "</font></strong></td></tr></table><br/>";
+                        } else if (page == 1 && result.totalNum == 0) {
+                            myHTML += '<table><tr><td><strong><font color="#FF9966">';
+                            myHTML +=
+                                "작성한 게시글이 없습니다.</font></strong></td></tr></table><br/>";
+                        } else {
+                            // 페이지 표시
+                            if (result.totalNum == 0) {
+                                myHTML += '<table><tr><td><strong><font color="#FF9966">';
+                                myHTML +=
+                                    "마지막 페이지입니다.</font></strong></td></tr></table><br/>";
+                                wrapper.innerHTML += myHTML;
+                                flagOn();
+                                return;
+                            }
+
+                            document.getElementById("listNum").innerHTML =
+                                '<font color="#FF9966"># 게시글 목록 (' +
+                                page +
+                                "/" +
+                                (result.remainPage + page - 1) +
+                                ")";
+
+                            myHTML += '<table><tr><td><strong><font color="#FF9966">';
+                            myHTML += page + " page</font></strong></td></tr></table><br/>";
+                            pageAdd();
+
+                            // 게시물 리스트 출력
+                            var urlStr;
+                            var postsLeng = result.posts.length;
+                            for (var i = 0; i < postsLeng; i++) {
+                                myHTML += '<table><tr><td><strong>';
+                                myHTML += result.posts[i].title;
+                                myHTML += '</strong></td></tr><tr><td><a href="postGet.html?postId=' + result.posts[i]._id;
+                                myHTML += '"><img src="';
+                                myHTML += result.posts[i].thumbnail;
+                                myHTML +=
+                                    '" width="250" style="margin-right: 1em;" onerror="';
+                                myHTML += "this.src='/public/images/BasicProfile.png'";
+                                myHTML += '" alt="" /></a></td></tr></table></br>';
+                                if (i == postsLeng - 1) {
+                                    setDate(result.posts[i].created_at);
+                                }
+                            }
+                        }
+                        wrapper.innerHTML += myHTML;
+                    }
+                }
+            });
+        }
+    </script>
+
+    <style>
+        table {
+            border: 3px solid #848484;
+            padding: 5px;
+            width: 250px;
+        }
+
+        tbody tr:nth-child(4) {
+            text-align: right;
+        }
+
+        tbody tr:nth-child(5) {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <h3 id="listNum">
+        <font color="#FF9966"># 전체 게시글 목록 (1/1)</font>
+    </h3>
+    <br />
+
+    <!-- <div id="myHTMLWrapper" style="overflow-y:auto; height:550px;"></div> -->
+    <div id="myHTMLWrapper"></div>
+
+    <br />
+    <input type="button" value="닫기" class="myButton" onclick="location.href='index.html'" />
+</body>
+
+</html>
